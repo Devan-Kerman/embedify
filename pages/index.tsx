@@ -3,6 +3,7 @@ import {useRouter} from "next/router";
 import {NextPageContext} from "next";
 import {AppProps} from "next/app";
 import {getURL} from "../src/util";
+import {Octokit} from "@octokit/core";
 
 
 export async function getServerSideProps(context: NextPageContext) {
@@ -28,7 +29,18 @@ export async function getServerSideProps(context: NextPageContext) {
         google: result
       }
     };
-  } else if(url.hostname == 'github.com') {
+  } else if(url.hostname === 'github.com') {
+    const pathname = url.pathname;
+
+    const octokit = new Octokit({
+      auth: process.env.NEXT_PUBLIC_SERP_API_KEY as string
+    })
+
+    const result = await octokit.request('GET /repos/{owner}/{repo}', {
+      owner: 'OWNER',
+      repo: 'REPO'
+    })
+
     return {
       props: {
         github: "test"
